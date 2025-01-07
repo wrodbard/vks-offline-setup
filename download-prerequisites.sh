@@ -18,6 +18,11 @@ DOWNLOAD_DIR_BIN="./tanzu-common-files-bin"
 if ! command -v tanzu >/dev/null 2>&1 ; then
   echo "Tanzu CLI missing. Please install Tanzu CLI first."
   exit 1
+else
+    if ! tanzu imgpkg > /dev/null 2>&1 ; then 
+        echo tanzu imgpkg plugin not installed. Please install the vmware-vsphere-plugin on this system
+        exit 1
+    fi
 fi
 
 if ! command -v imgpkg >/dev/null 2>&1 ; then
