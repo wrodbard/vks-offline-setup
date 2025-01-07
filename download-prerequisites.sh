@@ -46,7 +46,7 @@ wget -q -O "$DOWNLOAD_DIR_BIN"/tanzu-cli-linux-amd64.tar.gz https://github.com/v
 tanzu plugin download-bundle --group vmware-vsphere/default:v8.0.3 --to-tar "$DOWNLOAD_DIR_BIN"/vmware-vsphere-plugin.tar.gz
 imgpkg copy -b projects.registry.vmware.com/tkg/packages/standard/repo:"$TANZU_STANDARD_REPO_VERSION" --to-tar "$DOWNLOAD_DIR_BIN"/tanzu-packages.tar
 
-# Download the package.yaml files for all the Supervisor Services.
+# Download the package.yaml files for all the Supervisor Services. Modify as needed.
 echo "Downloading all Supervisor Services configuration files..."
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-tkgsvc.yaml          'https://packages.broadcom.com/artifactory/vsphere-distro/vsphere/iaas/kubernetes-service/3.2.0-package.yaml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-lci.yaml             'https://vmwaresaas.jfrog.io/artifactory/supervisor-services/cci-supervisor-service/v1.0.2/cci-supervisor-service.yml'
