@@ -25,6 +25,11 @@ if ! command -v imgpkg >/dev/null 2>&1 ; then
   exit 1
 fi
 
+if ! command -v yq >/dev/null 2>&1 ; then
+  echo "yq missing. Please install yq CLI first."
+  exit 1
+fi
+
 if ! command -v wget >/dev/null 2>&1 ; then
   echo "wget missing. Please install wget first."
   exit 1
