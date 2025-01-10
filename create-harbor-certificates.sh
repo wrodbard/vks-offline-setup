@@ -3,14 +3,14 @@
 ###################################################
 ## Modify the three variables below to match your environment
 ###################################################
-BOOTSTRAP_REGISTRY_URL="registry0.example.com"
-PLATFORM_REGISTRY_URL="registry1.example.com"
+BOOTSTRAP_REGISTRY_URL="registry0.env1.lab.test"
+PLATFORM_REGISTRY_URL="registry1.env1.lab.test"
 BOOTSTRAP_REGISTRY_IP=192.168.100.56
 
 # Define the directory to upload the files
 REGISTRY_CERT_FOLDER="./certificates"
-
 mkdir -p ${REGISTRY_CERT_FOLDER}
+
 sudo apt install -y ca-certificates
 cakeyfile=${REGISTRY_CERT_FOLDER}/$(hostname)-ca.key
 cacrtfile=${REGISTRY_CERT_FOLDER}/$(hostname)-ca.crt
@@ -43,7 +43,7 @@ openssl genrsa -out ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.key 4096
 
 # Generate a Server Certificate Signing Request"
 openssl req -sha512 -new -subj "/C=US/ST=CA/L=PaloAlto/O=Engineering/OU=Harbor/CN=${BOOTSTRAP_REGISTRY_URL}" -key ${REGISTRY_CERT_FOLDER}/${BOOTSTRAP_REGISTRY_URL}.key -out ${REGISTRY_CERT_FOLDER}/${BOOTSTRAP_REGISTRY_URL}.csr
-openssl req -sha512 -new -subj "/C=US/ST=CA/L=PaloAlto/O=Engineering/OU=Harbor/CN=${PLATFORM_REGISTRY_URL}"  -key ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.key  -out ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URLL}.csr
+openssl req -sha512 -new -subj "/C=US/ST=CA/L=PaloAlto/O=Engineering/OU=Harbor/CN=${PLATFORM_REGISTRY_URL}"  -key ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.key  -out ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.csr
 
 # Generate a x509 v3 extension file"
 cat > ${REGISTRY_CERT_FOLDER}/v3_1.ext <<-EOF
