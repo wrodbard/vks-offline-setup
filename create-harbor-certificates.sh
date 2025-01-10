@@ -3,8 +3,8 @@
 ###################################################
 ## Modify the three variables below to match your environment
 ###################################################
-BOOTSTRAP_REGISTRY_URL="registry0.example.com/supervisor_svc"
-PLATFORM_REGISTRY_URL="registry1.example.com/supervisor_svc"
+BOOTSTRAP_REGISTRY_URL="registry0.example.com"
+PLATFORM_REGISTRY_URL="registry1.example.com"
 BOOTSTRAP_REGISTRY_IP=192.168.100.56
 
 # Define the directory to upload the files
@@ -20,18 +20,18 @@ if [ ! -f "${cakeyfile}" ] || [ ! -f "${cacrtfile}" ]; then
 	echo "Generating them before generating the server certificate..."
 
 	# Generate a CA Cert Private Key"
-	openssl genrsa -out ${REGISTRY_CERT_FOLDER}/${cakeyfile} 4096
+	openssl genrsa -out ${cakeyfile} 4096
 
 	# Generate a CA Cert Certificate"
-	openssl req -x509 -new -nodes -sha512 -days 3650 -subj "/C=US/ST=VA/L=Ashburn/O=SE/OU=Personal/CN=$(hostname)" -key ${REGISTRY_CERT_FOLDER}/${cakeyfile} -out ${REGISTRY_CERT_FOLDER}/${cacrtfile}
+	openssl req -x509 -new -nodes -sha512 -days 3650 -subj "/C=US/ST=VA/L=Ashburn/O=SE/OU=Personal/CN=$(hostname)" -key ${cakeyfile} -out ${cacrtfile}
 
-	sudo cp -p ${REGISTRY_CERT_FOLDER}/${cacrtfile} /usr/local/share/ca-certificates/${cacrtfile}
+	echo sudo cp -p ${cacrtfile} /usr/local/share/ca-certificates/$(hostname)-ca.crt
 	echo 
 	echo
 	echo "For photon copy the ${cacrtfile} cert to /etc/ssl/certs/"
 	echo "           Execute rehash_ca_certificates.sh to update the CA bundle"
 	echo
-	echo "For Ubuntu CA file ${cacrtfile} copied to /usr/local/share/ca-certificates/${cacrtfile}."
+	echo "For Ubuntu CA file ${cacrtfile} copied to /usr/local/share/ca-certificates/$(hostname)-ca.crt."
 	echo "           Execute sudo update-ca-certificates after this script has completed execution"
 	echo
 	echo
@@ -72,5 +72,5 @@ DNS.2=*.${PLATFORM_REGISTRY_URL}
 EOF
 
 # Use the x509 v3 extension file to gerneate a cert for the Harbor host"
-openssl x509 -req -sha512 -days 365 -extfile v3_1.ext -CA ${REGISTRY_CERT_FOLDER}/${cacrtfile} -CAkey ${REGISTRY_CERT_FOLDER}/${cakeyfile} -CAcreateserial -in ${REGISTRY_CERT_FOLDER}/${BOOTSTRAP_REGISTRY_URL}.csr -out ${REGISTRY_CERT_FOLDER}/${BOOTSTRAP_REGISTRY_URL}.crt
-openssl x509 -req -sha512 -days 365 -extfile v3_2.ext -CA ${REGISTRY_CERT_FOLDER}/${cacrtfile} -CAkey ${REGISTRY_CERT_FOLDER}/${cakeyfile} -CAcreateserial -in ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.csr  -out ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.crt
+openssl x509 -req -sha512 -days 365 -extfile v3_1.ext -CA ${cacrtfile} -CAkey ${cakeyfile} -CAcreateserial -in ${REGISTRY_CERT_FOLDER}/${BOOTSTRAP_REGISTRY_URL}.csr -out ${REGISTRY_CERT_FOLDER}/${BOOTSTRAP_REGISTRY_URL}.crt
+openssl x509 -req -sha512 -days 365 -extfile v3_2.ext -CA ${cacrtfile} -CAkey ${cakeyfile} -CAcreateserial -in ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.csr  -out ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.crt
