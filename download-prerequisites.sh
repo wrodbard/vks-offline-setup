@@ -19,7 +19,7 @@ if ! command -v tanzu >/dev/null 2>&1 ; then
   echo "Tanzu CLI missing. Please install Tanzu CLI first."
   exit 1
 else
-    if ! tanzu imgpkg > /dev/null 2>&1 ; then 
+    if ! tanzu imgpkg --help > /dev/null 2>&1 ; then 
         echo tanzu imgpkg plugin not installed. Please install the vmware-vsphere-plugin on this system
         exit 1
     fi
@@ -49,7 +49,7 @@ mkdir -p "$DOWNLOAD_DIR_BIN"
 echo "Downloading Tanzu CLI and vmware-vsphere plugin bundle..."
 wget -q -O "$DOWNLOAD_DIR_BIN"/tanzu-cli-linux-amd64.tar.gz https://github.com/vmware-tanzu/tanzu-cli/releases/download/v1.1.0/tanzu-cli-linux-amd64.tar.gz
 tanzu plugin download-bundle --group vmware-vsphere/default:v8.0.3 --to-tar "$DOWNLOAD_DIR_BIN"/vmware-vsphere-plugin.tar.gz
-imgpkg copy -b projects.registry.vmware.com/tkg/packages/standard/repo:"$TANZU_STANDARD_REPO_VERSION" --to-tar "$DOWNLOAD_DIR_BIN"/tanzu-packages.tar
+tanzu imgpkg copy -b projects.registry.vmware.com/tkg/packages/standard/repo:"$TANZU_STANDARD_REPO_VERSION" --to-tar "$DOWNLOAD_DIR_BIN"/tanzu-packages.tar
 
 # Download the package.yaml files for all the Supervisor Services. Modify as needed.
 echo "Downloading all Supervisor Services configuration files..."
@@ -77,7 +77,7 @@ for file in "$DOWNLOAD_DIR_YML"/*.yaml; do
     if [ "$image" ]
     then
         echo Now downloading "$image"...
-        imgpkg copy -b "$image" --to-tar "$DOWNLOAD_DIR_TAR"/"$file_name".tar --cosign-signatures
+        tanzu imgpkg copy -b "$image" --to-tar "$DOWNLOAD_DIR_TAR"/"$file_name".tar --cosign-signatures
 
         # Get the name of the image from the package.spec.template.spec.fetch[].imgpkgBundle.image 
         # and replace the URL with the new harbor location
