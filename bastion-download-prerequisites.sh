@@ -1,27 +1,13 @@
 #!/bin/bash
-
-###################################################
-## Modify the three variables below to match your environment
-###################################################
-BOOTSTRAP_REGISTRY_URL="registry0.example.com/supervisor_svc"
-PLATFORM_REGISTRY_URL="registry1.example.com/supervisor_svc"
-TANZU_STANDARD_REPO_VERSION="v2024.8.21"
-
-
-###################################################
-
-# Define the directory to save the downloaded files
-DOWNLOAD_DIR_YML="./supervisor-services-yml"
-DOWNLOAD_DIR_TAR="./supervisor-services-tar"
-DOWNLOAD_DIR_BIN="./tanzu-common-files-bin"
+set -o pipefail
+source ./config/env.config
 
 if ! command -v tanzu >/dev/null 2>&1 ; then
   echo "Tanzu CLI missing. Please install Tanzu CLI first."
   exit 1
 else
     if ! tanzu imgpkg --help > /dev/null 2>&1 ; then 
-        echo tanzu imgpkg plugin not installed. Please install the vmware-vsphere-plugin on this system
-        exit 1
+        tanzu plugin install --group vmware-vsphere/default:v8.0.3
     fi
 fi
 
@@ -48,7 +34,8 @@ mkdir -p "$DOWNLOAD_DIR_BIN"
 # Downloading Tanzu CLI, Tanzu vmware-vsphere plugin bundle and Tanzu Standard Packages
 echo "Downloading Tanzu CLI and vmware-vsphere plugin bundle..."
 wget -q -O "$DOWNLOAD_DIR_BIN"/tanzu-cli-linux-amd64.tar.gz https://github.com/vmware-tanzu/tanzu-cli/releases/download/v1.1.0/tanzu-cli-linux-amd64.tar.gz
-tanzu plugin download-bundle --group vmware-vsphere/default:v8.0.3 --to-tar "$DOWNLOAD_DIR_BIN"/vmware-vsphere-plugin.tar.gz
+# tanzu plugin download-bundle --group vmware-vsphere/default:v8.0.3 --to-tar "$DOWNLOAD_DIR_BIN"/vmware-vsphere-plugin.tar.gz
+tar -czvf "$DOWNLOAD_DIR_BIN"/tanzu-cli-plugins.tar.gz -C ~/.local/share/tanzu-cli .
 tanzu imgpkg copy -b projects.registry.vmware.com/tkg/packages/standard/repo:"$TANZU_STANDARD_REPO_VERSION" --to-tar "$DOWNLOAD_DIR_BIN"/tanzu-packages.tar
 
 # Download the package.yaml files for all the Supervisor Services. Modify as needed.
@@ -83,9 +70,9 @@ for file in "$DOWNLOAD_DIR_YML"/*.yaml; do
         # and replace the URL with the new harbor location
         if [ "$file_name" == "supsvc-contour" ] || [ "$file_name" == "supsvc-harbor" ]
         then
-            newurl="$BOOTSTRAP_REGISTRY_URL"/"${image##*/}"
+            newurl="$BOOTSTRAP_REGISTRY"/"${BOOTSTRAP_SUPSVC_REPO}"/"${image##*/}"
         else
-            newurl="$PLATFORM_REGISTRY_URL"/"${image##*/}"
+            newurl="$PLATFORM_REGISTRY"/"${PLATFORM_SUPSVC_REPO}"/"${image##*/}"
         fi
         echo Updating Supervisor Service config file image to "$newurl"...
         a=$newurl yq -P '(.|select(.kind == "Package").spec.template.spec.fetch[].imgpkgBundle.image = env(a))' -i "$file"

@@ -1,9 +1,6 @@
 #!/bin/bash
-
-###################################################
-
-# Define the directory to upload the files
-DOWNLOAD_KR_OVA="./kubernetes-releases-ova"
+set -o pipefail
+source ./config/env.config
 
 if ! command -v jq >/dev/null 2>&1 ; then
   echo "JQ not installed. Exiting...."
@@ -15,7 +12,7 @@ if ! command -v wget >/dev/null 2>&1 ; then
 fi
 
 # Create the download directory if it doesn't exist
-mkdir -p "$DOWNLOAD_KR_OVA"
+mkdir -p "$DOWNLOAD_VKR_OVA"
 
 echo
 echo "The VMware subscribed content library has the following Kubernetes Release images ... "
