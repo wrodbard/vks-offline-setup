@@ -71,6 +71,6 @@ DNS.1=${PLATFORM_REGISTRY_URL}
 DNS.2=*.${PLATFORM_REGISTRY_URL}
 EOF
 
-# Use the x509 v3 extension file to gerneate a cert for the Harbor host"
-openssl x509 -req -sha512 -days 365 -extfile v3_1.ext -CA ${cacrtfile} -CAkey ${cakeyfile} -CAcreateserial -in ${REGISTRY_CERT_FOLDER}/${BOOTSTRAP_REGISTRY_URL}.csr -out ${REGISTRY_CERT_FOLDER}/${BOOTSTRAP_REGISTRY_URL}.crt
-openssl x509 -req -sha512 -days 365 -extfile v3_2.ext -CA ${cacrtfile} -CAkey ${cakeyfile} -CAcreateserial -in ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.csr  -out ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.crt
+# Use the x509 v3 extension file to generate a cert for the Harbor hosts."
+openssl x509 -req -sha512 -days 365 -extfile ${REGISTRY_CERT_FOLDER}/v3_1.ext -CA ${cacrtfile} -CAkey ${cakeyfile} -CAcreateserial -in ${REGISTRY_CERT_FOLDER}/${BOOTSTRAP_REGISTRY_URL}.csr -out ${REGISTRY_CERT_FOLDER}/${BOOTSTRAP_REGISTRY_URL}.crt
+openssl x509 -req -sha512 -days 365 -extfile ${REGISTRY_CERT_FOLDER}/v3_2.ext -CA ${cacrtfile} -CAkey ${cakeyfile} -CAcreateserial -in ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.csr  -out ${REGISTRY_CERT_FOLDER}/${PLATFORM_REGISTRY_URL}.crt
