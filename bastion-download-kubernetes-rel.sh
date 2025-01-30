@@ -35,7 +35,7 @@ tar -cvzf "${tkgrimage}".tar.gz "${tkgrimage}"
 echo
 echo "Cleaning up..."
 [ -d "${tkgrimage}" ] && rm -rf "${tkgrimage}"
-mv "${tkgrimage}".tar.gz "${DOWNLOAD_KR_OVA}" 
+mv "${tkgrimage}".tar.gz "${DOWNLOAD_VKR_OVA}" 
 
 echo "Copy the file ${tkgrimage}.tar.gz to the offline admin machine that has access to the vSphere environment."
 echo "You can untar the file and upload the OVA files to a Content Library called Local..."
