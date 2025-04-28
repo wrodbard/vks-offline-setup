@@ -130,18 +130,22 @@ export REGISTRY_USERNAME
 envsubst < ./config/registry-spec.json > temp_registry.json
 echo "Adding Registry ${REGISTRY_NAME} to ${VCENTER_HOSTNAME} ..."
 response=$(curl -ks --write-out "%{http_code}" --output /tmp/status.json  -X POST -H "${HEADER_SESSIONID}" -H "${HEADER_CONTENTTYPE}" -d "@temp_registry.json" https://"${VCENTER_HOSTNAME}"/api/vcenter/namespace-management/supervisors/"${SUPERVISOR_ID}"/container-image-registries)
-if [[ "${response}" -ne 200 ]] ; then
-	echo "Error: Could not add registry to Supervisor. This may happen if the registry has been previously added. Please validate!!"
-fi
+echo $response
+# if [[ "${response}" -ne 200 ]] ; then
+# 	echo "Error: Could not add registry to Supervisor. This may happen if the registry has been previously added. Please validate!!"
+# fi
+echo $DOWNLOAD_DIR_YML
 
 for file in "${DOWNLOAD_DIR_YML}"/supsvc-*.yaml; do
+	echo $file
 	full_filename=$(basename "$file")
 	file_name="${full_filename%.yaml}"
     image=$(yq -P '(.|select(.kind == "Package").spec.template.spec.fetch[].imgpkgBundle.image)' "$file")
+	
     if [ "$image" ];then
 		if [[ "$image" == *"${REGISTRY_URL}"* ]]; then
 			echo Now uploading "${DOWNLOAD_DIR_TAR}"/"$file_name".tar ...
-			tanzu imgpkg copy --tar "${DOWNLOAD_DIR_TAR}"/"$file_name".tar --to-repo "${REGISTRY_URL}" --cosign-signatures --registry-username "${REGISTRY_USERNAME}" --registry-password "${REGISTRY_PASSWORD}"
+			tanzu imgpkg copy --tar "${DOWNLOAD_DIR_TAR}"/"$file_name".tar --to-repo "${REGISTRY_URL}"/"$file_name" --cosign-signatures --registry-ca-cert-path /opt/data/vks-offline-setup/certificates/vpaif-harbor.set.lab.crt --registry-username "${REGISTRY_USERNAME}" --registry-password "${REGISTRY_PASSWORD}"
 
 			echo "Processing file - ${file} ..."
 			export FILE_CONTENT=$(base64 "${file}" -w0)
@@ -154,5 +158,5 @@ for file in "${DOWNLOAD_DIR_YML}"/supsvc-*.yaml; do
 	fi
 done
 
-rm -f temp_final.json
-rm -f temp_registry.json
+# rm -f temp_final.json
+# rm -f temp_registry.json
