@@ -51,12 +51,15 @@ tanzu imgpkg copy -b projects.registry.vmware.com/tkg/packages/standard/repo:"$T
 # Download the package.yaml files for all the Supervisor Services. Modify as needed.
 echo "Downloading all Supervisor Services configuration files..."
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-tkgsvc.yaml          'https://packages.broadcom.com/artifactory/vsphere-distro/vsphere/iaas/kubernetes-service/3.2.0-package.yaml'
-wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-lci.yaml             'https://vmwaresaas.jfrog.io/artifactory/supervisor-services/cci-supervisor-service/v1.0.2/cci-supervisor-service.yml'
+wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-cci.yaml             'https://vmwaresaas.jfrog.io/artifactory/supervisor-services/cci-supervisor-service/v1.0.2/cci-supervisor-service.yml'
+wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-cci-values.yaml      'https://vmwaresaas.jfrog.io/artifactory/supervisor-services/cci-supervisor-service/v1.0.2/values.yml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-harbor.yaml          'https://vmwaresaas.jfrog.io/ui/api/v1/download?repoKey=supervisor-services&path=harbor/v2.9.1/harbor.yml'
+wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-harbor-values.yaml   'https://vmwaresaas.jfrog.io/ui/api/v1/download?repoKey=supervisor-services&path=harbor/v2.9.1/harbor-data-values.yml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-contour.yaml         'https://vmwaresaas.jfrog.io/ui/api/v1/download?repoKey=supervisor-services&path=contour/v1.28.2/contour.yml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-externaldns.yaml     'https://vmwaresaas.jfrog.io/ui/api/v1/download?repoKey=supervisor-services&path=external-dns/v0.13.4/external-dns.yml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-nsxmgmt.yaml         'https://vmwaresaas.jfrog.io/ui/api/v1/download?repoKey=supervisor-services&path=nsx-management-proxy/v0.2.1/nsx-management-proxy.yml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-argocd-operator.yaml 'https://raw.githubusercontent.com/vsphere-tmm/Supervisor-Services/refs/heads/main/supervisor-services-labs/argocd-operator/v0.12.0/argocd-operator.yaml'
+wget -q -O "$DOWNLOAD_DIR_YML"/supsvc_config_from_automation.py      'https://vmwaresaas.jfrog.io/artifactory/supervisor-services/cci-supervisor-service/v1.0.2/service_config_from_automation.py'
 #wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-dsm-operator.yaml    'https://packages.broadcom.com/artifactory/dsm-distro/dsm-consumption-operator/supervisor-service/1.2.0/package.yaml'
 #wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-minio.yaml           'https://projects.packages.broadcom.com/artifactory/vsphere-distro/vsphere/iaas/minio/minio-service-definition-v2.0.10-3.yaml'
 #wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-cloudian.yaml        'https://vmwaresaas.jfrog.io/ui/api/v1/download?repoKey=vDPP-Partner-YAML&path=Cloudian%252FHyperstore%252FSupervisorService%252F1.3.1%252Fhyperstore-supervisorservice-1.3.1.yaml'
