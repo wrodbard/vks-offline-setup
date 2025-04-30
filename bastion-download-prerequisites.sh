@@ -92,3 +92,6 @@ for file in "$DOWNLOAD_DIR_YML"/*.yaml; do
         a=$newurl yq -P '(.|select(.kind == "Package").spec.template.spec.fetch[].imgpkgBundle.image = env(a))' -i "$file"
     fi
 done
+
+#copy tar/yaml to admin host
+sshpass -p "$HTTP_PASSWORD" scp -r supervisor-services* $HTTP_USERNAME@$HTTP_HOST:$ADMIN_RESOURCES_DIR

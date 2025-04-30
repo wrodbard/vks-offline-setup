@@ -21,7 +21,7 @@ done
 for image in "${helm_charts[@]}"; do
     filename=""
     echo "==> Pulling helm charts... $image"
-    helm fetch "$image" --destination "./resources" # --username='$oauthtoken' --password="$NGC_API_KEY"
+    helm fetch "$image" --destination "./resources" --username='$oauthtoken' --password="$NGC_API_KEY"
 
     if [ $? -ne 0 ]; then
         pulling_error_message="$pulling_error_message\nFailed to download helm chart: $image"
@@ -50,8 +50,8 @@ done
 for item in "${llm_output[@]}"; do
     IFS=', ' read -r image_name uri profile_name profile_id <<< "$item"
 
-    local local_model_cache_path="$LOCAL_RESOURCES_DIR/$image_name/$profile_name"_cache
-    local local_model_store_path="$LOCAL_RESOURCES_DIR/$image_name/$profile_name"_model
+    local_model_cache_path="$BASTION_RESOURCES_DIR/$image_name/$profile_name"_cache
+    local_model_store_path="$BASTION_RESOURCES_DIR/$image_name/$profile_name"_model
 
     echo "==> Pulling model: $image_name profile: $profile_name to $local_model_cache_path"
 
@@ -60,7 +60,7 @@ for item in "${llm_output[@]}"; do
         -v "$local_model_store_path":/model-repo \
         -e NGC_API_KEY="$NGC_API_KEY" \
         $( [ -n "$HTTP_PROXY" ] && [ -n "$HTTPS_PROXY" ] && echo " -e http_proxy=$HTTP_PROXY -e https_proxy=$HTTPS_PROXY -e no_proxy=$NO_PROXY" ) \
-        -u "$(id -u root)" \
+        -u "$(id -u)" \
         "$uri" \
         bash -c "create-model-store --profile $profile_id --model-store /model-repo"
     if [ $? -ne 0 ]; then
@@ -72,8 +72,8 @@ done
 for item in "${emb_output[@]}"; do
     IFS=', ' read -r image_name uri profile_name profile_id <<< "$item"
 
-    local local_model_cache_path="$LOCAL_RESOURCES_DIR/$image_name/$profile_name"_cache
-    local local_model_store_path="$LOCAL_RESOURCES_DIR/$image_name/$profile_name"_model
+    local_model_cache_path="$LOCAL_RESOURCES_DIR/$image_name/$profile_name"_cache
+    local_model_store_path="$LOCAL_RESOURCES_DIR/$image_name/$profile_name"_model
 
     echo "==> Pulling model: $image_name profile: $profile_name to $local_model_cache_path"
     docker run -it --rm --name="$image_name" \

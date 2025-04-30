@@ -1,8 +1,7 @@
 {
     "containers":[
-		"nvcr.io/nim/meta/llama-3.1-8b-instruct:latest",
-		"nvcr.io/nim/meta/llama-3.2-11b-vision-instruct:latest",
-		"nvcr.io/nim/nvidia/nv-embedqa-e5-v5:latest",
+		"nvcr.io/nim/meta/llama-3.1-8b-instruct:1.8.3",
+		"nvcr.io/nim/nvidia/nv-embedqa-e5-v5:1.5.1",
 		"pgvector/pgvector:pg16",
 		"nvcr.io/nvidia/aiworkflows/rag-playground:24.08",
 		"nvcr.io/nvidia/aiworkflows/rag-application-multiturn-chatbot:24.08",
@@ -38,15 +37,15 @@
 				"profiles":[
 					{
 						"profile_name":"vllm-fp16-tp1",
-						"profile_id":"193649a2eb95e821309d6023a2cabb31489d3b690a9973c7ab5d1ff58b0aa7eb"
+						"profile_id":"4f904d571fe60ff24695b5ee2aa42da58cb460787a968f1e8a09f5a7e862728d"
 					},
 					{
 						"profile_name":"tensorrt-llm-a100-bf16-tp1",
-						"profile_id":"9189d008806a9638d4206e6ff94c0b0d9acc2a8861f6de5a49b9d0a5acdcf049"
+						"profile_id":"222d1729a785201e8a021b226d74d227d01418c41b556283ee1bdbf0a818bd94"
 					},
 					{
 						"profile_name":"tensorrt-llm-h100-bf16-tp1",
-						"profile_id":"ed4af8b6563348d37f72bfd013be44573a1c88f384ef8fb3eaf0c69e4f235c20"
+						"profile_id":"e7dbd9a8ce6270d2ec649a0fecbcae9b5336566113525f20aee3809ba5e63856"
 					}
 				]
 			}
