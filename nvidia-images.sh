@@ -7,10 +7,11 @@ mapfile -t llm < <(jq -c '.models.llm[]' './config/images.json')
 mapfile -t embedding < <(jq -c '.models.embedding[]' './config/images.json')
 
 docker login ${BOOTSTRAP_REGISTRY} -u "$BOOTSTRAP_REGISTRY_USERNAME" -p "$BOOTSTRAP_REGISTRY_PASSWORD"
+docker login nvcr.io -u '$oauthtoken' -p "$NGC_API_KEY"
 
 for image in "${container_images[@]}"; do
     echo "==> Start to push container image: $image"
-    version=$(echo "$image" | sed "s/^[^/]*\//$PLATFORM_REGISTRY\/$BOOTSTRAP_PROXY_CACHE\//")
+    version=$(echo "$image" | sed "s/^[^/]*\//$BOOTSTRAP_REGISTRY\/$BOOTSTRAP_NVIDIA_REPO\//")
     docker pull $image
     docker tag $image $version
     docker push $version
