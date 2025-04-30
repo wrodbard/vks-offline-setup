@@ -29,19 +29,42 @@ export GOVC_RESOURCE_POOL=
 
 ############################ WIP
 
+# upload to content library VKS
+
 govc library.ls
 
-govc library.create Local
+govc library.create $CL_VKS
 
 for files in $(ls $DOWNLOAD_VKR_OVA/*.tar.gz); do
     echo
     echo "Extracting the OVA files from the tarball: $files"
     tar -xzvf $files
     echo
-    echo "Uploading the OVA files to the Content Library: Local"
+    echo "Uploading the OVA files to the Content Library: $CL_VKS"
     for ovffile in $(ls ${files%.tar.gz}/*.*); do
         echo "Uploading the OVF file: $ovffile"
-        govc library.import -n ${ovffile%.ovf} -m=true Local $ovffile
+        govc library.import -n ${ovffile%.ovf} -m=true $CL_VKSs $ovffile
+    done
+    echo
+    echo "Cleaning up..."
+    [ -d "${files%.tar.gz}" ] && rm -rf "${files%.tar.gz}"
+done
+
+# upload to content library DLVM
+
+govc library.ls
+
+govc library.create $CL_DLVM
+
+for files in $(ls $DOWNLOAD_DLVM_OVA/*.tar.gz); do
+    echo
+    echo "Extracting the OVA files from the tarball: $files"
+    tar -xzvf $files
+    echo
+    echo "Uploading the OVA files to the Content Library: $CL_DLVM"
+    for ovffile in $(ls ${files%.tar.gz}/*.*); do
+        echo "Uploading the OVF file: $ovffile"
+        govc library.import -n ${ovffile%.ovf} -m=true $CL_DLVM $ovffile
     done
     echo
     echo "Cleaning up..."
