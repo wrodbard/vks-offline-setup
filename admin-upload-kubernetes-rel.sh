@@ -1,5 +1,5 @@
 #!/bin/bash
-set -o pipefail
+set -xeo pipefail
 source ./config/env.config
 
 if ! command -v jq >/dev/null 2>&1 ; then
@@ -35,41 +35,40 @@ govc library.ls
 
 govc library.create $CL_VKS
 
-for files in $(ls $DOWNLOAD_VKR_OVA/*.tar.gz); do
-    echo
-    echo "Extracting the OVA files from the tarball: $files"
-    tar -xzvf $files
-    echo
-    echo "Uploading the OVA files to the Content Library: $CL_VKS"
-    for ovffile in $(ls ${files%.tar.gz}/*.*); do
-        echo "Uploading the OVF file: $ovffile"
-        govc library.import -n ${ovffile%.ovf} -m=true $CL_VKSs $ovffile
-    done
-    echo
-    echo "Cleaning up..."
-    [ -d "${files%.tar.gz}" ] && rm -rf "${files%.tar.gz}"
-done
+# Save original directory
+pushd . > /dev/null
+
+cd $DOWNLOAD_VKR_OVA
+FILE_WITH_EXTENSION=$(ls *.tar.gz)
+FILENAME=${FILE_WITH_EXTENSION%.tar.gz}
+tar xvf $FILE_WITH_EXTENSION --transform 's|.*/||'
+echo "Importing OVF"
+govc library.import $CL_VKS ubuntu-ova.ovf
+echo "Cleaning up"
+find . -type f | grep -v "$FILE_WITH_EXTENSION" | xargs rm -fr
+
+# Go back to original directory
+popd > /dev/null
 
 # upload to content library DLVM
-
 govc library.ls
 
 govc library.create $CL_DLVM
 
-for files in $(ls $DOWNLOAD_DLVM_OVA/*.tar.gz); do
-    echo
-    echo "Extracting the OVA files from the tarball: $files"
-    tar -xzvf $files
-    echo
-    echo "Uploading the OVA files to the Content Library: $CL_DLVM"
-    for ovffile in $(ls ${files%.tar.gz}/*.*); do
-        echo "Uploading the OVF file: $ovffile"
-        govc library.import -n ${ovffile%.ovf} -m=true $CL_DLVM $ovffile
-    done
-    echo
-    echo "Cleaning up..."
-    [ -d "${files%.tar.gz}" ] && rm -rf "${files%.tar.gz}"
-done
+# Save original directory
+pushd . > /dev/null
+
+cd ../$DOWNLOAD_DLVM_OVA
+FILE_WITH_EXTENSION=$(ls *.tar.gz)
+FILENAME=${FILE_WITH_EXTENSION%.tar.gz}
+tar xvf $FILE_WITH_EXTENSION --transform 's|.*/||'
+echo "Importing OVF"
+govc library.import $CL_DLVM $FILE_WITH_EXTENSION
+echo "Cleaning up"
+find . -type f | grep -v "$FILE_WITH_EXTENSION" | xargs rm -fr
+
+# Go back to original directory
+popd > /dev/null
 
 #echo "     tar -xzvf ${tkgrimage}.tar.gz"
 #echo "     cd ${tkgrimage}"

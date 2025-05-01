@@ -145,7 +145,7 @@ for file in "${DOWNLOAD_DIR_YML}"/supsvc-*.yaml; do
     if [ "$image" ];then
 		if [[ "$image" == *"${REGISTRY_URL}"* ]]; then
 			echo Now uploading "${DOWNLOAD_DIR_TAR}"/"$file_name".tar ...
-			tanzu imgpkg copy --tar "${DOWNLOAD_DIR_TAR}"/"$file_name".tar --to-repo "${REGISTRY_URL}"/"$file_name" --cosign-signatures --registry-ca-cert-path /opt/data/vks-offline-setup/certificates/vpaif-harbor.set.lab.crt --registry-username "${REGISTRY_USERNAME}" --registry-password "${REGISTRY_PASSWORD}"
+			tanzu imgpkg copy --tar "${DOWNLOAD_DIR_TAR}"/"$file_name".tar --to-repo "${REGISTRY_URL}"/"$file_name" --cosign-signatures --registry-ca-cert-path ./certificates/$REGISTRY_NAME.crt --registry-username "${REGISTRY_USERNAME}" --registry-password "${REGISTRY_PASSWORD}"
 
 			echo "Processing file - ${file} ..."
 			export FILE_CONTENT=$(base64 "${file}" -w0)

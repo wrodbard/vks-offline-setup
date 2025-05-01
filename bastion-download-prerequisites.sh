@@ -94,4 +94,4 @@ for file in "$DOWNLOAD_DIR_YML"/*.yaml; do
 done
 
 #copy tar/yaml to admin host
-sshpass -p "$HTTP_PASSWORD" scp -r supervisor-services* $HTTP_USERNAME@$HTTP_HOST:$ADMIN_RESOURCES_DIR
+sshpass -p "$HTTP_PASSWORD" scp -r {supervisor-services*,tanzu-common-files-bin} $HTTP_USERNAME@$HTTP_HOST:$ADMIN_RESOURCES_DIR
