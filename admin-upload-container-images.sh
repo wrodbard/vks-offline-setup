@@ -19,13 +19,17 @@ fi
 
 if ! command -v tanzu >/dev/null 2>&1 ; then
 	echo "Tanzu CLI missing. Please install Tanzu CLI."
-  	exit 1
+  	tar -xzvf "$DOWNLOAD_DIR_BIN"/tanzu-cli-linux-amd64.tar.gz -C $DOWNLOAD_DIR_BIN
+	sudo mv $DOWNLOAD_DIR_BIN/v1.1.0/tanzu* /usr/local/bin/tanzu
 else
     if ! tanzu imgpkg --help > /dev/null 2>&1 ; then 
 		mkdir -p ~/.local/share/tanzu-cli/
 		tar -xzvf "$DOWNLOAD_DIR_BIN"/tanzu-cli-plugins.tar.gz -C  ~/.local/share/tanzu-cli/
+		tanzu plugin source update default --uri $BOOTSTRAP_REGISTRY/tanzu-plugins/plugin-inventory:latest
+		tanzu plugin install --group vmware-vsphere/default
+		tanzu config cert add --host $BOOTSTRAP_REGISTRY --insecure true --skip-cert-verify true
 #    	echo tanzu imgpkg plugin not installed. Please install the vmware-vsphere-plugin on this system
-#        exit 1
+#       exit 1
     fi
 fi
 
@@ -66,7 +70,7 @@ elif [ "$1" == "platform" ]; then
 	REGISTRY_URL1=${PLATFORM_REGISTRY}/${PLATFROM_TNZSVC_REPO}
 	REGISTRY_USERNAME=${PLATFORM_REGISTRY_USERNAME}
 	REGISTRY_PASSWORD=${PLATFORM_REGISTRY_PASSWORD}
-	tanzu imgpkg copy --tar "$DOWNLOAD_DIR_BIN"/tanzu-packages.tar --to-repo "${REGISTRY_URL1}" --cosign-signatures --registry-username "${REGISTRY_USERNAME}" --registry-password "${REGISTRY_PASSWORD}"
+	# tanzu imgpkg copy --tar "$DOWNLOAD_DIR_BIN"/tanzu-packages.tar --to-repo "${REGISTRY_URL1}" --cosign-signatures --registry-username "${REGISTRY_USERNAME}" --registry-password "${REGISTRY_PASSWORD}"
 fi
 
 IPs=$(getent hosts "${REGISTRY_NAME}" | awk '{ print $1 }')
@@ -87,6 +91,9 @@ if [ "$found" = false ]; then
   	echo "Error: Could not resolve the IP address ${REGISTRY_IP} for ${REGISTRY_NAME}. Please validate!!"
   	exit 1
 fi
+
+# get certificate from harbor
+openssl s_client -showcerts -servername $REGISTRY_NAME -connect $REGISTRY_NAME:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ./certificates/$REGISTRY_NAME.crt
 
 HEADER_CONTENTTYPE="Content-Type: application/json"
 ################################################
@@ -140,12 +147,13 @@ for file in "${DOWNLOAD_DIR_YML}"/supsvc-*.yaml; do
 	echo $file
 	full_filename=$(basename "$file")
 	file_name="${full_filename%.yaml}"
+	stripped=$(echo -n "$file_name" | sed 's/supsvc-//g') # strip the supsvc- from filename
     image=$(yq -P '(.|select(.kind == "Package").spec.template.spec.fetch[].imgpkgBundle.image)' "$file")
 	
     if [ "$image" ];then
 		if [[ "$image" == *"${REGISTRY_URL}"* ]]; then
 			echo Now uploading "${DOWNLOAD_DIR_TAR}"/"$file_name".tar ...
-			tanzu imgpkg copy --tar "${DOWNLOAD_DIR_TAR}"/"$file_name".tar --to-repo "${REGISTRY_URL}"/"$file_name" --cosign-signatures --registry-ca-cert-path ./certificates/$REGISTRY_NAME.crt --registry-username "${REGISTRY_USERNAME}" --registry-password "${REGISTRY_PASSWORD}"
+			tanzu imgpkg copy --tar "${DOWNLOAD_DIR_TAR}"/"$file_name".tar --to-repo "${REGISTRY_URL}"/"$stripped" --cosign-signatures --registry-ca-cert-path ./certificates/$REGISTRY_NAME.crt --registry-username "${REGISTRY_USERNAME}" --registry-password "${REGISTRY_PASSWORD}"
 
 			echo "Processing file - ${file} ..."
 			export FILE_CONTENT=$(base64 "${file}" -w0)

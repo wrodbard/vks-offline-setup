@@ -6,7 +6,7 @@ sudo apt update
 
 # Install required packages
 echo "Installing required packages..."
-sudo apt install -y wget curl jq git openssl openssh-server nginx ca-certificates
+sudo apt install -y wget curl jq git openssl openssh-server nginx ca-certificates sshpass
 
 # Install Docker Engine
 # Add Docker's official GPG key:
@@ -24,8 +24,8 @@ sudo apt-get update
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Install yq
-wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && \
-    chmod +x /usr/bin/yq
+sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && \
+    sudo chmod +x /usr/bin/yq
 
 # Install kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"

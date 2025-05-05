@@ -63,7 +63,7 @@ FILE_WITH_EXTENSION=$(ls *.tar.gz)
 FILENAME=${FILE_WITH_EXTENSION%.tar.gz}
 tar xvf $FILE_WITH_EXTENSION --transform 's|.*/||'
 echo "Importing OVF"
-govc library.import $CL_DLVM $FILE_WITH_EXTENSION
+govc library.import $CL_DLVM $FILENAME.ovf
 echo "Cleaning up"
 find . -type f | grep -v "$FILE_WITH_EXTENSION" | xargs rm -fr
 

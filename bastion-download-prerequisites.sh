@@ -44,14 +44,20 @@ mkdir -p "$DOWNLOAD_DIR_BIN"
 # Downloading Tanzu CLI, Tanzu vmware-vsphere plugin bundle and Tanzu Standard Packages
 echo "Downloading Tanzu CLI, Tanzu Packages and Tanzu CLI plugins..."
 wget -q -O "$DOWNLOAD_DIR_BIN"/tanzu-cli-linux-amd64.tar.gz https://github.com/vmware-tanzu/tanzu-cli/releases/download/v1.1.0/tanzu-cli-linux-amd64.tar.gz
-# tanzu plugin download-bundle --group vmware-vsphere/default:v8.0.3 --to-tar "$DOWNLOAD_DIR_BIN"/vmware-vsphere-plugin.tar.gz
-tar -czvf "$DOWNLOAD_DIR_BIN"/tanzu-cli-plugins.tar.gz -C ~/.local/share/tanzu-cli .
+tanzu plugin download-bundle --group vmware-vsphere/default:v8.0.3 --to-tar "$DOWNLOAD_DIR_BIN"/vmware-vsphere-plugin.tar.gz
+tar -xzvf "$DOWNLOAD_DIR_BIN"/tanzu-cli-linux-amd64.tar.gz -C $DOWNLOAD_DIR_BIN
+sudo mv $DOWNLOAD_DIR_BIN/v1.1.0/tanzu* /usr/local/bin/tanzu
+tanzu plugin install --group vmware-vsphere/default
 tanzu imgpkg copy -b projects.registry.vmware.com/tkg/packages/standard/repo:"$TANZU_STANDARD_REPO_VERSION" --to-tar "$DOWNLOAD_DIR_BIN"/tanzu-packages.tar
+#upload tanzu plugins to bootstrap harbor
+tanzu config cert add --host $BOOTSTRAP_REGISTRY --insecure true --skip-cert-verify true
+tanzu plugin upload-bundle --tar tanzu-plugin.tar.gz --to-repo $BOOTSTRAP_REGISTRY/charts/plugin
+
 
 # Download the package.yaml files for all the Supervisor Services. Modify as needed.
 echo "Downloading all Supervisor Services configuration files..."
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-tkgsvc.yaml          'https://packages.broadcom.com/artifactory/vsphere-distro/vsphere/iaas/kubernetes-service/3.2.0-package.yaml'
-wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-cci.yaml             'https://vmwaresaas.jfrog.io/artifactory/supervisor-services/cci-supervisor-service/v1.0.2/cci-supervisor-service.yml'
+wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-cci-supervisor-service-package.yaml             'https://vmwaresaas.jfrog.io/artifactory/supervisor-services/cci-supervisor-service/v1.0.2/cci-supervisor-service.yml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-cci-values.yaml      'https://vmwaresaas.jfrog.io/artifactory/supervisor-services/cci-supervisor-service/v1.0.2/values.yml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-harbor.yaml          'https://vmwaresaas.jfrog.io/ui/api/v1/download?repoKey=supervisor-services&path=harbor/v2.9.1/harbor.yml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-harbor-values.yaml   'https://vmwaresaas.jfrog.io/ui/api/v1/download?repoKey=supervisor-services&path=harbor/v2.9.1/harbor-data-values.yml'
@@ -94,4 +100,4 @@ for file in "$DOWNLOAD_DIR_YML"/*.yaml; do
 done
 
 #copy tar/yaml to admin host
-sshpass -p "$HTTP_PASSWORD" scp -r {supervisor-services*,tanzu-common-files-bin} $HTTP_USERNAME@$HTTP_HOST:$ADMIN_RESOURCES_DIR
+sshpass -p "$HTTP_PASSWORD" scp -o StrictHostKeyChecking=no -r {supervisor-services*,tanzu-common-files-bin,/usr/local/bin/yq} $HTTP_USERNAME@$HTTP_HOST:$ADMIN_RESOURCES_DIR

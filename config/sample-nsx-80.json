@@ -10,7 +10,7 @@
         "proxy_settings_source": "VC_INHERITED"
     },
     "default_image_repository": "",
-    "login_banner": "You are connected to Navneet's Supervisor",
+    "login_banner": "You are connected to ASA Supervisor",
     "master_DNS": [ "${DNS_SERVER}" ],
     "worker_DNS": [ "${DNS_SERVER}" ],
     "master_DNS_search_domains": [ "${DNS_SEARCHDOMAIN}" ],
