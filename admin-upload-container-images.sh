@@ -166,5 +166,20 @@ for file in "${DOWNLOAD_DIR_YML}"/supsvc-*.yaml; do
 	fi
 done
 
+# setup nginx
+cat > /etc/nginx/conf.d/mirror.conf << EOF
+server {
+ listen 80;
+ server_name $HTTP_HOST;
+ root /data/debs/;
+
+ location / {
+   autoindex on;
+ }
+}
+EOF
+
+sudo systemctl restart nginx
+
 # rm -f temp_final.json
 # rm -f temp_registry.json

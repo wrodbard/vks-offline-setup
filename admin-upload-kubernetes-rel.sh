@@ -31,9 +31,9 @@ export GOVC_RESOURCE_POOL=
 
 # upload to content library VKS
 
-govc library.ls
-
-govc library.create $CL_VKS
+if ! govc library.ls $CL_VKS > /dev/null 2>&1 ; then 
+  govc library.create $CL_VKS
+fi
 
 # Save original directory
 pushd . > /dev/null
@@ -43,7 +43,7 @@ FILE_WITH_EXTENSION=$(ls *.tar.gz)
 FILENAME=${FILE_WITH_EXTENSION%.tar.gz}
 tar xvf $FILE_WITH_EXTENSION --transform 's|.*/||'
 echo "Importing OVF"
-govc library.import $CL_VKS ubuntu-ova.ovf
+govc library.import $CL_VKS $FILENAME.ovf
 echo "Cleaning up"
 find . -type f | grep -v "$FILE_WITH_EXTENSION" | xargs rm -fr
 

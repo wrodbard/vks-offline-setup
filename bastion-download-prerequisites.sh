@@ -56,7 +56,7 @@ tanzu plugin upload-bundle --tar tanzu-plugin.tar.gz --to-repo $BOOTSTRAP_REGIST
 
 # Download the package.yaml files for all the Supervisor Services. Modify as needed.
 echo "Downloading all Supervisor Services configuration files..."
-wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-tkgsvc.yaml          'https://packages.broadcom.com/artifactory/vsphere-distro/vsphere/iaas/kubernetes-service/3.2.0-package.yaml'
+wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-tkg-service.yaml          'https://packages.broadcom.com/artifactory/vsphere-distro/vsphere/iaas/kubernetes-service/3.3.0-package.yaml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-cci-supervisor-service-package.yaml             'https://vmwaresaas.jfrog.io/artifactory/supervisor-services/cci-supervisor-service/v1.0.2/cci-supervisor-service.yml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-cci-values.yaml      'https://vmwaresaas.jfrog.io/artifactory/supervisor-services/cci-supervisor-service/v1.0.2/values.yml'
 wget -q -O "$DOWNLOAD_DIR_YML"/supsvc-harbor.yaml          'https://vmwaresaas.jfrog.io/ui/api/v1/download?repoKey=supervisor-services&path=harbor/v2.9.1/harbor.yml'

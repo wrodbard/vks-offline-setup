@@ -64,14 +64,3 @@ sudo cp -av archive.ubuntu.com/ubuntu/ $REPO_LOCATION/mirror/archive.ubuntu.com/
 
 #copy to http server in AG
 sshpass -p "$HTTP_PASSWORD" scp -r $REPO_LOCATION/mirror/archive.ubuntu.com/ubuntu $HTTP_USERNAME@$HTTP_HOST:/data/debs/.
-
-# setup nginx
-# server {
-#  listen 80;
-#  server_name 172.29.0.8;
-#  root /data/debs/;
-
-#  location / {
-#    autoindex on;
-#  }
-# }
