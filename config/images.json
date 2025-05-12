@@ -1,6 +1,8 @@
 {
     "containers":[
         "nvcr.io/nvidia/pytorch-pb24h1:24.03.02-py3",
+        "nvcr.io/nvidia/tensorflow-pb24h1:24.03.02-tf2-py3",
+        "nvcr.io/nvidia/k8s/cuda-sample:vectoradd-cuda11.7.1-ubi8",
 		"nvcr.io/nim/meta/llama-3.1-8b-instruct:1.8.3",
 		"nvcr.io/nim/nvidia/nv-embedqa-e5-v5:1.5.1",
 		"pgvector/pgvector:pg16",

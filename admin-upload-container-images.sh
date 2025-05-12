@@ -166,7 +166,9 @@ for file in "${DOWNLOAD_DIR_YML}"/supsvc-*.yaml; do
 	fi
 done
 
+################################################
 # setup nginx
+################################################
 cat > /etc/nginx/conf.d/mirror.conf << EOF
 server {
  listen 80;
@@ -178,8 +180,10 @@ server {
  }
 }
 EOF
-
 sudo systemctl restart nginx
 
-# rm -f temp_final.json
-# rm -f temp_registry.json
+################################################
+# copy the kubernetes deployment files to the 
+# nginx location to be downloaded during deployments.
+################################################
+cp gpu-operator/gpu-operator* $REPO_LOCATION/debs/

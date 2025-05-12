@@ -68,12 +68,29 @@ for item in "${llm_output[@]}"; do
     fi
 done
 
+# Push LLM to bootstrap harbor
+# Push LLM files.
+for item in "${llm_output[@]}"; do
+    IFS=', ' read -r image_name uri profile_name profile_id <<< "$item"
+
+    local_model_store_path="$BASTION_RESOURCES_DIR/$image_name/$profile_name"_model
+
+    if [[ ! -d "$local_model_store_path" ]]; then
+        echo "File not found: $local_model_store_path"
+        continue
+    fi
+    cd "$local_model_store_path" || exit
+    echo "==> Pushing model: $local_model_store_path to model store: \
+        $LOCAL_HARBOR_URI/model-store/$image_name/$profile_name"
+    pais models push --modelName "models/$image_name/$profile_name" --modelStore "$BOOTSTRAP_REGISTRY" -t v1
+done
+
 # Pull all embedding model files
 for item in "${emb_output[@]}"; do
     IFS=', ' read -r image_name uri profile_name profile_id <<< "$item"
 
-    local_model_cache_path="$LOCAL_RESOURCES_DIR/$image_name/$profile_name"_cache
-    local_model_store_path="$LOCAL_RESOURCES_DIR/$image_name/$profile_name"_model
+    local_model_cache_path="$BASTION_RESOURCES_DIR/$image_name/$profile_name"_cache
+    local_model_store_path="$BASTION_RESOURCES_DIR/$image_name/$profile_name"_model
 
     echo "==> Pulling model: $image_name profile: $profile_name to $local_model_cache_path"
     docker run -it --rm --name="$image_name" \
@@ -90,11 +107,27 @@ for item in "${emb_output[@]}"; do
     fi
 
     # tar all embedding model files
-    path="$LOCAL_RESOURCES_DIR/$profile_name.tgz"
+    path="$BASTION_RESOURCES_DIR/$profile_name.tgz"
     tar -czvf $path -C $local_model_cache_path
-    mkdir -p "$LOCAL_RESOURCES_DIR/$profile_name"
-    mv $path "$LOCAL_RESOURCES_DIR/$profile_name"
+    mkdir -p "$BASTION_RESOURCES_DIR/$profile_name"
+    mv $path "$BASTION_RESOURCES_DIR/$profile_name"
     echo "Archived: $path"
+done
+	
+# Push embedding tar file.
+for item in "${emb_output[@]}"; do
+    IFS=', ' read -r image_name uri profile_name profile_id <<< "$item"
+
+    local local_model_store_path="$BASTION_RESOURCES_DIR/$image_name/$profile_name"
+
+    if [[ ! -d "$local_model_store_path" ]]; then
+        echo "File not found: $local_model_store_path"
+        continue
+    fi
+    cd "$local_model_store_path" || exit
+    echo "==> Pushing model: $local_model_store_path  to model store: \
+        $BOOTSTRAP_REGISTRY/model-store/$image_name/$profile_name"
+    pais models push --modelName "model-store/$image_name/$profile_name" --modelStore "$BOOTSTRAP_REGISTRY" -t v1
 done
 
 ## todo - add push llm and embed (need pais)
